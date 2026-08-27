@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J Utilidades</title>
+<style>
+:root{--primary:#111827;--accent:#16a34a;--bg:#f5f7fa;--card:#fff;--text:#172033;--muted:#667085}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(135deg,#111827,#263244);color:#fff;padding:28px 20px}
+.top{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{font-size:28px;font-weight:800}.logo span{color:#4ade80}
+.tag{opacity:.8;font-size:14px}
+main{max-width:1100px;margin:28px auto;padding:0 20px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+input,select{border:1px solid #d0d5dd;border-radius:12px;padding:13px 14px;font-size:15px;background:white}
+input{flex:1;min-width:220px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+.card{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 6px 20px rgba(16,24,40,.08);display:flex;flex-direction:column}
+.card img{width:100%;height:210px;object-fit:cover;background:#eef2f6}
+.content{padding:16px;display:flex;flex-direction:column;flex:1}
+.category{font-size:12px;color:var(--accent);font-weight:700;text-transform:uppercase}
+h2{font-size:18px;margin:7px 0}.desc{color:var(--muted);font-size:14px;line-height:1.45;flex:1}
+.price{font-size:23px;font-weight:800;margin:14px 0}
+.buy{display:block;text-align:center;background:var(--accent);color:#fff;text-decoration:none;padding:12px;border-radius:10px;font-weight:700}
+.buy:hover{filter:brightness(.93)}
+.empty{text-align:center;padding:50px;color:var(--muted)}
+footer{text-align:center;color:#667085;padding:40px 20px}
+@media(max-width:600px){.top{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card img{height:160px}.content{padding:12px}h2{font-size:16px}.price{font-size:19px}}
+@media(max-width:380px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div>
+      <div class="logo">J <span>Utilidades</span></div>
+      <div class="tag">Produtos úteis para o seu dia a dia</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="controls">
+    <input id="search" type="search" placeholder="🔎 Procurar produto...">
+    <select id="category"><option value="all">Todas as categorias</option></select>
+  </div>
+  <section id="products" class="grid"></section>
+  <div id="empty" class="empty" hidden>Nenhum produto encontrado.</div>
+</main>
+
+<footer>© 2026 J Utilidades — Fale conosco pelo WhatsApp</footer>
+
+<script>
+/*
+  EDITE AQUI:
+  1) Troque WHATSAPP pelo número da sua loja, com código do país.
+     Exemplo: 5521990067062
+  2) Adicione seus produtos dentro da lista abaixo.
+*/
+const WHATSAPP = "5521990067062";
+
+const products = [
+  {
+    name: "Produto exemplo",
+    description: "Coloque aqui uma descrição detalhada do seu produto.",
+    price: 29.90,
+    category: "Destaques",
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    name: "Outro produto",
+    description: "Você pode adicionar quantos produtos quiser nesta lista.",
+    price: 49.90,
+    category: "Destaques",
+    image: "https://images.unsplash.com/photo-1585386959984-a41552231693?auto=format&fit=crop&w=900&q=80"
+  }
+];
+
+const money = n => n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+function render(){
+  const q = document.querySelector("#search").value.toLowerCase().trim();
+  const cat = document.querySelector("#category").value;
+  const list = products.filter(p =>
+    (cat==="all" || p.category===cat) &&
+    (`${p.name} ${p.description}`.toLowerCase().includes(q))
+  );
+  const box=document.querySelector("#products"), empty=document.querySelector("#empty");
+  box.innerHTML="";
+  empty.hidden=list.length>0;
+  list.forEach(p=>{
+    const msg=encodeURIComponent(`Olá! Tenho interesse no produto "${p.name}" no valor de ${money(p.price)}.`);
+    box.insertAdjacentHTML("beforeend",`
+      <article class="card">
+        <img src="${p.image}" alt="${p.name}" loading="lazy">
+        <div class="content">
+          <div class="category">${p.category}</div>
+          <h2>${p.name}</h2>
+          <div class="desc">${p.description}</div>
+          <div class="price">${money(p.price)}</div>
+          <a class="buy" target="_blank" rel="noopener" href="https://wa.me/${WHATSAPP}?text=${msg}">Comprar pelo WhatsApp</a>
+        </div>
+      </article>`);
+  });
+}
+
+const cats=[...new Set(products.map(p=>p.category))];
+cats.forEach(c=>document.querySelector("#category").insertAdjacentHTML("beforeend",`<option>${c}</option>`));
+document.querySelector("#search").addEventListener("input",render);
+document.querySelector("#category").addEventListener("change",render);
+render();
+</script>
+</body>
+</html>
